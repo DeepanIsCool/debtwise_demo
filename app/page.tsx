@@ -90,7 +90,7 @@ const mockLoanData: Record<string, FormData> = {
     emiDueDate: createDateForDPD(15),
     lastPaymentDate: createLastPaymentDate(15),
     lastPaymentAmount: "5500",
-    loanType: "Personal Loan (DPD 15)",
+    loanType: "Personal Loan",
   },
   smartphone_dpd_25: {
     name: "Priya Sharma",
@@ -102,7 +102,7 @@ const mockLoanData: Record<string, FormData> = {
     emiDueDate: createDateForDPD(25),
     lastPaymentDate: createLastPaymentDate(25),
     lastPaymentAmount: "2800",
-    loanType: "Smartphone EMI (DPD 25)",
+    loanType: "Smartphone EMI",
   },
 
   // DPD 30-90 scenarios
@@ -116,7 +116,7 @@ const mockLoanData: Record<string, FormData> = {
     emiDueDate: createDateForDPD(45),
     lastPaymentDate: createLastPaymentDate(45),
     lastPaymentAmount: "3200",
-    loanType: "2-Wheeler Loan (DPD 45)",
+    loanType: "2-Wheeler Loan",
   },
   personal_dpd_60: {
     name: "Meera Patel",
@@ -128,7 +128,7 @@ const mockLoanData: Record<string, FormData> = {
     emiDueDate: createDateForDPD(60),
     lastPaymentDate: createLastPaymentDate(60),
     lastPaymentAmount: "8500",
-    loanType: "Personal Loan (DPD 60)",
+    loanType: "Personal Loan",
   },
   vitanium_dpd_75: {
     name: "Suresh Reddy",
@@ -140,7 +140,7 @@ const mockLoanData: Record<string, FormData> = {
     emiDueDate: createDateForDPD(75),
     lastPaymentDate: createLastPaymentDate(75),
     lastPaymentAmount: "4200",
-    loanType: "Business Loan (DPD 75)",
+    loanType: "Business Loan",
   },
 
   // DPD 90-120 scenarios
@@ -154,7 +154,7 @@ const mockLoanData: Record<string, FormData> = {
     emiDueDate: createDateForDPD(105),
     lastPaymentDate: createLastPaymentDate(105),
     lastPaymentAmount: "12000",
-    loanType: "Personal Loan (DPD 105)",
+    loanType: "Personal Loan",
   },
   smartphone_dpd_95: {
     name: "Ravi Gupta",
@@ -166,7 +166,7 @@ const mockLoanData: Record<string, FormData> = {
     emiDueDate: createDateForDPD(95),
     lastPaymentDate: createLastPaymentDate(95),
     lastPaymentAmount: "3800",
-    loanType: "Smartphone EMI (DPD 95)",
+    loanType: "Smartphone EMI",
   },
 
   // DPD 120+ scenarios
@@ -180,7 +180,7 @@ const mockLoanData: Record<string, FormData> = {
     emiDueDate: createDateForDPD(150),
     lastPaymentDate: createLastPaymentDate(150),
     lastPaymentAmount: "18000",
-    loanType: "Personal Loan (DPD 150)",
+    loanType: "Personal Loan",
   },
   twowheeler_dpd_180: {
     name: "Anjali Nair",
@@ -192,7 +192,7 @@ const mockLoanData: Record<string, FormData> = {
     emiDueDate: createDateForDPD(180),
     lastPaymentDate: createLastPaymentDate(180),
     lastPaymentAmount: "4500",
-    loanType: "2-Wheeler Loan (DPD 180)",
+    loanType: "2-Wheeler Loan",
   },
 };
 
@@ -809,6 +809,26 @@ export default function DebtCollectionDashboard() {
                             )
                           }
                           placeholder="₹0"
+                          className="mt-1 h-10 md:h-8 text-sm md:text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3">
+                      <div>
+                        <Label
+                          htmlFor="loanType"
+                          className="text-xs font-medium"
+                        >
+                          Loan Type
+                        </Label>
+                        <Input
+                          id="loanType"
+                          value={formData.loanType}
+                          onChange={(e) =>
+                            handleInputChange("loanType", e.target.value)
+                          }
+                          placeholder="Enter loan type (e.g., Personal Loan, Auto Loan)"
                           className="mt-1 h-10 md:h-8 text-sm md:text-xs"
                         />
                       </div>
