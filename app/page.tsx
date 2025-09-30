@@ -5,6 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -839,15 +846,39 @@ export default function DebtCollectionDashboard() {
                         >
                           Loan Type
                         </Label>
-                        <Input
-                          id="loanType"
+                        <Select
                           value={formData.loanType}
-                          onChange={(e) =>
-                            handleInputChange("loanType", e.target.value)
+                          onValueChange={(value) =>
+                            handleInputChange("loanType", value)
                           }
-                          placeholder="Enter loan type (e.g., Personal Loan, Auto Loan)"
-                          className="mt-1 h-12 text-base border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded-lg"
-                        />
+                        >
+                          <SelectTrigger className="h-12 text-base border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded-lg">
+                            <SelectValue placeholder="Select loan type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Personal Loan">
+                              Personal Loan
+                            </SelectItem>
+                            <SelectItem value="Smartphone EMI">
+                              Smartphone EMI
+                            </SelectItem>
+                            <SelectItem value="2-Wheeler Loan">
+                              2-Wheeler Loan
+                            </SelectItem>
+                            <SelectItem value="Business Loan">
+                              Business Loan
+                            </SelectItem>
+                            <SelectItem value="Home Loan">Home Loan</SelectItem>
+                            <SelectItem value="Car Loan">Car Loan</SelectItem>
+                            <SelectItem value="Education Loan">
+                              Education Loan
+                            </SelectItem>
+                            <SelectItem value="Gold Loan">Gold Loan</SelectItem>
+                            <SelectItem value="Credit Card">
+                              Credit Card
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                   </div>
