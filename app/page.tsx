@@ -294,6 +294,63 @@ export default function DebtCollectionDashboard() {
     return `Test_Campaign_${phoneLastTen}_${timestamp}`;
   };
 
+  const saveCallDataToSheet = async (
+    roomName: string,
+    callStatus: string,
+    additionalData?: any
+  ) => {
+    try {
+      // Convert to IST (UTC+5:30)
+      const now = new Date();
+      const istOffset = 5.5 * 60 * 60 * 1000; // 5 hours 30 minutes in milliseconds
+      const istTime = new Date(now.getTime() + istOffset);
+      const timestamp =
+        istTime.toISOString().replace("T", " ").substring(0, 19) + " IST";
+
+      const recordingUrl = `https://livekitblob.blob.core.windows.net/livekitblob/${roomName}.mp4`;
+      const transcriptUrl = `https://livekitblob.blob.core.windows.net/livekitblob/transcripts/${roomName}.json`;
+      const analysisUrl = `https://livekitblob.blob.core.windows.net/livekitblob/analysis/${roomName}.json`;
+
+      const rowData = [
+        timestamp, // Timestamp
+        formData.name || "", // Name
+        formData.phone || "", // Phone
+        formData.email || "", // Email
+        formData.nbfcName || "", // NBFC/Lender
+        formData.originalAmount || "", // Original Amount
+        formData.outstandingAmount || "", // Outstanding Amount
+        formData.emiDueDate || "", // EMI Due Date
+        dpd.toString(), // DPD
+        formData.lastPaymentDate || "", // Last Payment Date
+        formData.lastPaymentAmount || "", // Last Payment Amount
+        formData.loanType || "", // Loan Type
+        roomName, // Room Name
+        callStatus, // Call Status
+        recordingUrl, // Recording URL
+        transcriptUrl, // Transcript URL
+        analysisUrl, // Analysis URL
+      ];
+
+      const response = await fetch("/api/sheets", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ data: rowData }),
+      });
+
+      if (response.ok) {
+        console.log("[v0] Data saved to Google Sheets successfully");
+      } else {
+        const errorData = await response.json();
+        console.error("[v0] Failed to save data to Google Sheets:", errorData);
+      }
+    } catch (error) {
+      console.error("[v0] Error saving data to Google Sheets:", error);
+      // Don't throw error to avoid breaking the call flow
+    }
+  };
+
   const fetchMediaFiles = async (room: string) => {
     setIsLoadingMedia(true);
 
@@ -309,18 +366,45 @@ export default function DebtCollectionDashboard() {
         const transcriptUrl = `/api/proxy?url=${encodeURIComponent(
           `https://livekitblob.blob.core.windows.net/livekitblob/transcripts/${room}.json`
         )}`;
+        console.log("[v0] Fetching transcript from:", transcriptUrl);
         const transcriptResponse = await fetch(transcriptUrl);
+        console.log(
+          "[v0] Transcript response status:",
+          transcriptResponse.status
+        );
+
         if (transcriptResponse.ok) {
           const transcriptData: TranscriptData =
             await transcriptResponse.json();
-          setTranscriptData(transcriptData);
+          console.log("[v0] Transcript data received:", transcriptData);
+
+          // Validate transcript data
+          if (
+            transcriptData &&
+            transcriptData.items &&
+            Array.isArray(transcriptData.items)
+          ) {
+            setTranscriptData(transcriptData);
+            console.log(
+              "[v0] Valid transcript data set:",
+              transcriptData.items.length,
+              "items"
+            );
+          } else {
+            console.log("[v0] Invalid transcript data structure");
+          }
+        } else {
+          console.log(
+            "[v0] Transcript fetch failed with status:",
+            transcriptResponse.status
+          );
         }
       } catch (error) {
-        console.log("[v0] Transcript not yet available:", error);
+        console.error("[v0] Error fetching transcript:", error);
       }
 
       // Fetch analysis/outcome using proxy with retry logic
-      await fetchAnalysisWithRetry(room, 5); // Retry up to 5 times
+      const finalOutcomeData = await fetchAnalysisWithRetry(room, 5); // Retry up to 5 times
     } catch (error) {
       console.error("[v0] Error fetching media files:", error);
     } finally {
@@ -330,7 +414,10 @@ export default function DebtCollectionDashboard() {
     }
   };
 
-  const fetchAnalysisWithRetry = async (room: string, maxRetries: number) => {
+  const fetchAnalysisWithRetry = async (
+    room: string,
+    maxRetries: number
+  ): Promise<OutcomeData | null> => {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const analysisUrl = `/api/proxy?url=${encodeURIComponent(
@@ -354,12 +441,23 @@ export default function DebtCollectionDashboard() {
                 "[v0] Failed to parse outcome data string:",
                 parseError
               );
+              continue; // Skip this attempt and try again
             }
           }
 
-          console.log("[v0] Received outcome data:", outcomeData);
-          setOutcomeData(outcomeData);
-          return; // Success - exit retry loop
+          // Validate outcome data structure
+          if (
+            outcomeData &&
+            typeof outcomeData === "object" &&
+            Object.keys(outcomeData).length > 0
+          ) {
+            console.log("[v0] Valid outcome data received:", outcomeData);
+            setOutcomeData(outcomeData);
+            return outcomeData; // Return the outcome data
+          } else {
+            console.log("[v0] Invalid outcome data structure:", outcomeData);
+            continue; // Try again
+          }
         } else {
           console.log(
             "[v0] Analysis response not OK:",
@@ -387,6 +485,7 @@ export default function DebtCollectionDashboard() {
     }
 
     console.log("[v0] Failed to fetch analysis after all retries");
+    return null; // Return null if no data could be fetched
   };
 
   const makeCall = async () => {
@@ -446,17 +545,20 @@ export default function DebtCollectionDashboard() {
         setRecordingUrl("");
         setTranscriptData(null);
         setOutcomeData(null);
+
         startPolling(room);
       } else {
         console.log("[v0] Call failed with status:", response.status);
         setIsConnecting(false);
         setIsSystemReady(true);
+
         alert("Call could not be connected");
       }
     } catch (error) {
       console.error("[v0] Error making call:", error);
       setIsConnecting(false);
       setIsSystemReady(true);
+
       alert("Error connecting call. Please check your network connection.");
     }
   };
@@ -495,7 +597,11 @@ export default function DebtCollectionDashboard() {
           setIsRecording(false);
           setIsPolling(false);
           clearInterval(pollInterval);
-          // Immediately fetch media files after call ends
+
+          // Immediately save call data to Google Sheets when call ends
+          await saveCallDataToSheet(room, "Call Completed");
+
+          // Then fetch media files after call ends
           // Keep system not ready until media files are processed
           fetchMediaFiles(room);
         }
@@ -506,13 +612,18 @@ export default function DebtCollectionDashboard() {
     }, 2000); // Poll every 2 seconds
   };
 
-  const endCall = () => {
+  const endCall = async () => {
     setIsCallActive(false);
     setIsOngoingCall(false);
     setIsRecording(false);
     setIsPolling(false);
     setIsConnecting(false);
     setIsSystemReady(true);
+
+    // Save data immediately when call is manually ended
+    if (roomName) {
+      await saveCallDataToSheet(roomName, "Call Ended Manually");
+    }
   };
 
   const formatQuestion = (questionCode: string): string => {
