@@ -25,6 +25,7 @@ import {
   FileText,
   HelpCircle,
   Loader2,
+  Lock,
   Menu,
   Pause,
   Phone,
@@ -261,16 +262,22 @@ export default function DebtCollectionDashboard() {
     {
       target: ".customer-info-section",
       content:
-        "Start by entering customer information. Name and phone number are required fields.",
+        "Start by entering customer information. All fields marked with a red asterisk (*) are required.",
       disableBeacon: true,
       placement: isMobile ? "bottom" : "right",
       placementBeacon: isMobile ? "bottom" : "right",
+      offset: isMobile ? 20 : 10,
+      disableScrolling: false,
+      spotlightPadding: isMobile ? 5 : 10,
     },
     {
       target: ".generate-button",
       content:
         "Need sample data? Click 'Generate' to auto-fill the form with realistic loan scenarios.",
       placement: "bottom",
+      offset: isMobile ? 15 : 10,
+      disableScrolling: false,
+      spotlightPadding: isMobile ? 5 : 10,
     },
     {
       target: ".loan-details-section",
@@ -278,12 +285,18 @@ export default function DebtCollectionDashboard() {
         "Review and adjust the loan details including amounts, dates, and loan type.",
       placement: isMobile ? "bottom" : "right",
       placementBeacon: isMobile ? "bottom" : "right",
+      offset: isMobile ? 20 : 10,
+      disableScrolling: false,
+      spotlightPadding: isMobile ? 5 : 10,
     },
     {
       target: ".start-call-button",
       content:
         "Once all details are filled, click 'Start Call' to initiate the AI-powered collection call.",
       placement: "top",
+      offset: isMobile ? 15 : 10,
+      disableScrolling: false,
+      spotlightPadding: isMobile ? 5 : 10,
     },
     {
       target: ".call-management-section",
@@ -291,6 +304,9 @@ export default function DebtCollectionDashboard() {
         "Monitor the call in real-time. You'll see outcomes, recordings, and transcripts here after the call.",
       placement: isMobile ? "top" : "left",
       placementBeacon: isMobile ? "top" : "left",
+      offset: isMobile ? 20 : 10,
+      disableScrolling: false,
+      spotlightPadding: isMobile ? 5 : 10,
     },
   ];
 
@@ -804,34 +820,44 @@ export default function DebtCollectionDashboard() {
         showProgress
         callback={handleJoyrideCallback}
         stepIndex={tourStepIndex}
+        scrollToFirstStep
+        disableScrolling={false}
+        scrollOffset={isMobile ? 120 : 100}
+        spotlightClicks={false}
         styles={{
           options: {
             primaryColor: "#2563eb",
             zIndex: 10000,
-            width: isMobile ? 280 : 360,
+            width: isMobile ? 260 : 360,
           },
           tooltip: {
             borderRadius: 12,
-            padding: isMobile ? 12 : 20,
-            fontSize: isMobile ? 14 : 16,
+            padding: isMobile ? 10 : 20,
+            fontSize: isMobile ? 13 : 16,
           },
           tooltipContainer: {
             textAlign: "left",
+          },
+          tooltipContent: {
+            padding: isMobile ? "8px 0" : "12px 0",
           },
           buttonNext: {
             borderRadius: 8,
             padding: isMobile ? "6px 12px" : "8px 16px",
             backgroundColor: "#2563eb",
-            fontSize: isMobile ? 13 : 14,
+            fontSize: isMobile ? 12 : 14,
           },
           buttonBack: {
             borderRadius: 8,
             padding: isMobile ? "6px 12px" : "8px 16px",
             color: "#64748b",
-            fontSize: isMobile ? 13 : 14,
+            fontSize: isMobile ? 12 : 14,
           },
           buttonSkip: {
-            fontSize: isMobile ? 13 : 14,
+            fontSize: isMobile ? 12 : 14,
+          },
+          spotlight: {
+            borderRadius: isMobile ? 8 : 12,
           },
         }}
         floaterProps={{
@@ -1074,7 +1100,7 @@ export default function DebtCollectionDashboard() {
                           Get Started
                         </h4>
                         <p className="text-[10px] text-blue-700 mt-0.5">
-                          Enter name and phone (required)
+                          Fill all required fields to continue
                         </p>
                       </div>
                     </div>
@@ -1088,11 +1114,6 @@ export default function DebtCollectionDashboard() {
                         className="text-xs font-semibold text-gray-700 flex items-center"
                       >
                         Name <span className="text-red-500 ml-0.5">*</span>
-                        {!formData.name && currentStep === 1 && (
-                          <span className="ml-1.5 text-[10px] font-normal text-blue-600 animate-pulse">
-                            Required
-                          </span>
-                        )}
                       </Label>
                       <Input
                         id="name"
@@ -1115,11 +1136,6 @@ export default function DebtCollectionDashboard() {
                         className="text-xs font-semibold text-gray-700 flex items-center"
                       >
                         Phone <span className="text-red-500 ml-0.5">*</span>
-                        {!formData.phone && currentStep === 1 && (
-                          <span className="ml-1.5 text-[10px] font-normal text-blue-600 animate-pulse">
-                            Required
-                          </span>
-                        )}
                       </Label>
                       <Input
                         id="phone"
@@ -1139,9 +1155,9 @@ export default function DebtCollectionDashboard() {
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="email"
-                        className="text-xs font-semibold text-gray-700"
+                        className="text-xs font-semibold text-gray-700 flex items-center"
                       >
-                        Email
+                        Email <span className="text-red-500 ml-0.5">*</span>
                       </Label>
                       <Input
                         id="email"
@@ -1151,16 +1167,21 @@ export default function DebtCollectionDashboard() {
                           handleInputChange("email", e.target.value)
                         }
                         placeholder="Email address"
-                        className="h-9 text-xs border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded-md"
+                        className={`h-9 text-xs border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded-md transition-all duration-200 ${
+                          !formData.email && currentStep === 1
+                            ? "border-blue-400 shadow-sm shadow-blue-100"
+                            : ""
+                        }`}
                       />
                     </div>
 
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="nbfcName"
-                        className="text-xs font-semibold text-gray-700"
+                        className="text-xs font-semibold text-gray-700 flex items-center"
                       >
-                        NBFC / Lender
+                        NBFC / Lender{" "}
+                        <span className="text-red-500 ml-0.5">*</span>
                       </Label>
                       <Input
                         id="nbfcName"
@@ -1169,7 +1190,11 @@ export default function DebtCollectionDashboard() {
                           handleInputChange("nbfcName", e.target.value)
                         }
                         placeholder="Lender name"
-                        className="h-9 text-xs border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded-md"
+                        className={`h-9 text-xs border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded-md transition-all duration-200 ${
+                          !formData.nbfcName && currentStep === 1
+                            ? "border-blue-400 shadow-sm shadow-blue-100"
+                            : ""
+                        }`}
                       />
                     </div>
                   </div>
@@ -1211,11 +1236,29 @@ export default function DebtCollectionDashboard() {
                           ];
                         fillMockData(randomScenario);
                       }}
+                      disabled={
+                        !formData.name ||
+                        !formData.phone ||
+                        !formData.email ||
+                        !formData.nbfcName
+                      }
                       size="sm"
-                      className="h-7 px-3 text-[10px] bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md rounded-md font-medium generate-button"
+                      className="h-7 px-3 text-[10px] bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md rounded-md font-medium generate-button disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <Sparkles className="w-3 h-3 mr-1" />
-                      Generate
+                      {!formData.name ||
+                      !formData.phone ||
+                      !formData.email ||
+                      !formData.nbfcName ? (
+                        <>
+                          <Lock className="w-3 h-3 mr-1" />
+                          Generate
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-3 h-3 mr-1" />
+                          Generate
+                        </>
+                      )}
                     </Button>
                   </CardTitle>
                 </CardHeader>
@@ -1451,7 +1494,9 @@ export default function DebtCollectionDashboard() {
                         isCallActive ||
                         !isSystemReady ||
                         !formData.name ||
-                        !formData.phone
+                        !formData.phone ||
+                        !formData.email ||
+                        !formData.nbfcName
                       }
                       className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed h-10 text-xs font-semibold rounded-lg transition-all duration-200 hover:scale-[1.02] start-call-button"
                       size="sm"
@@ -1480,9 +1525,12 @@ export default function DebtCollectionDashboard() {
                     </Button>
                   )}
 
-                  {(!formData.name || !formData.phone) && (
+                  {(!formData.name ||
+                    !formData.phone ||
+                    !formData.email ||
+                    !formData.nbfcName) && (
                     <p className="text-[10px] text-center text-gray-500 mt-1.5">
-                      Name & Phone required
+                      All required fields must be filled
                     </p>
                   )}
                 </div>
