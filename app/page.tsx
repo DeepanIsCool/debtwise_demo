@@ -1147,73 +1147,6 @@ export default function DebtCollectionDashboard() {
                     </div>
                   </div>
                 </CardContent>
-                <div className="p-3 flex-shrink-0 border-t border-gray-200 bg-gradient-to-br from-blue-50 via-blue-50 to-indigo-50">
-                  {currentStep === 3 && !isCallActive && (
-                    <div className="mb-2 bg-green-50 border border-green-200 rounded-lg p-2 flex items-start space-x-2 animate-in fade-in slide-in-from-bottom duration-500">
-                      <CheckCircle className="w-3.5 h-3.5 text-green-600 flex-shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-green-900 text-xs">
-                          Ready!
-                        </h4>
-                        <p className="text-[10px] text-green-700">
-                          Click "Start Call" to begin
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {isOngoingCall ? (
-                    <Button
-                      disabled
-                      className="w-full bg-green-600 text-white shadow-lg animate-pulse h-10 text-xs font-semibold rounded-lg start-call-button"
-                      size="sm"
-                    >
-                      <Phone className="w-3.5 h-3.5 mr-1.5" />
-                      Call in Progress...
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={makeCall}
-                      disabled={
-                        isConnecting ||
-                        isCallActive ||
-                        !isSystemReady ||
-                        !formData.name ||
-                        !formData.phone
-                      }
-                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed h-10 text-xs font-semibold rounded-lg transition-all duration-200 hover:scale-[1.02] start-call-button"
-                      size="sm"
-                    >
-                      {isConnecting ? (
-                        <>
-                          <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                          Connecting...
-                        </>
-                      ) : isCallActive ? (
-                        <>
-                          <Phone className="w-3.5 h-3.5 mr-1.5" />
-                          In Progress...
-                        </>
-                      ) : !isSystemReady ? (
-                        <>
-                          <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <Phone className="w-3.5 h-3.5 mr-1.5" />
-                          Start Call
-                        </>
-                      )}
-                    </Button>
-                  )}
-
-                  {(!formData.name || !formData.phone) && (
-                    <p className="text-[10px] text-center text-gray-500 mt-1.5">
-                      Name & Phone required
-                    </p>
-                  )}
-                </div>
               </Card>
             </div>
 
@@ -1459,6 +1392,73 @@ export default function DebtCollectionDashboard() {
                     </div>
                   </div>
                 </CardContent>
+                <div className="p-3 flex-shrink-0 border-t border-gray-200 bg-gradient-to-br from-green-50 via-green-50 to-emerald-50">
+                  {currentStep === 3 && !isCallActive && (
+                    <div className="mb-2 bg-green-50 border border-green-200 rounded-lg p-2 flex items-start space-x-2 animate-in fade-in slide-in-from-bottom duration-500">
+                      <CheckCircle className="w-3.5 h-3.5 text-green-600 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-green-900 text-xs">
+                          Ready!
+                        </h4>
+                        <p className="text-[10px] text-green-700">
+                          Click "Start Call" to begin
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {isOngoingCall ? (
+                    <Button
+                      disabled
+                      className="w-full bg-green-600 text-white shadow-lg animate-pulse h-10 text-xs font-semibold rounded-lg start-call-button"
+                      size="sm"
+                    >
+                      <Phone className="w-3.5 h-3.5 mr-1.5" />
+                      Call in Progress...
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={makeCall}
+                      disabled={
+                        isConnecting ||
+                        isCallActive ||
+                        !isSystemReady ||
+                        !formData.name ||
+                        !formData.phone
+                      }
+                      className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed h-10 text-xs font-semibold rounded-lg transition-all duration-200 hover:scale-[1.02] start-call-button"
+                      size="sm"
+                    >
+                      {isConnecting ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                          Connecting...
+                        </>
+                      ) : isCallActive ? (
+                        <>
+                          <Phone className="w-3.5 h-3.5 mr-1.5" />
+                          In Progress...
+                        </>
+                      ) : !isSystemReady ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <Phone className="w-3.5 h-3.5 mr-1.5" />
+                          Start Call
+                        </>
+                      )}
+                    </Button>
+                  )}
+
+                  {(!formData.name || !formData.phone) && (
+                    <p className="text-[10px] text-center text-gray-500 mt-1.5">
+                      Name & Phone required
+                    </p>
+                  )}
+                </div>
               </Card>
             </div>
 
