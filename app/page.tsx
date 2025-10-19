@@ -15,6 +15,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   BarChart3,
   Calendar,
@@ -244,6 +245,9 @@ export default function DebtCollectionDashboard() {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
+  // Mobile detection
+  const isMobile = useIsMobile();
+
   // Check if user has visited before
   useEffect(() => {
     const hasVisited = localStorage.getItem("hasVisitedDebtWise");
@@ -259,7 +263,8 @@ export default function DebtCollectionDashboard() {
       content:
         "Start by entering customer information. Name and phone number are required fields.",
       disableBeacon: true,
-      placement: "right",
+      placement: isMobile ? "bottom" : "right",
+      placementBeacon: isMobile ? "bottom" : "right",
     },
     {
       target: ".generate-button",
@@ -271,7 +276,8 @@ export default function DebtCollectionDashboard() {
       target: ".loan-details-section",
       content:
         "Review and adjust the loan details including amounts, dates, and loan type.",
-      placement: "right",
+      placement: isMobile ? "bottom" : "right",
+      placementBeacon: isMobile ? "bottom" : "right",
     },
     {
       target: ".start-call-button",
@@ -283,7 +289,8 @@ export default function DebtCollectionDashboard() {
       target: ".call-management-section",
       content:
         "Monitor the call in real-time. You'll see outcomes, recordings, and transcripts here after the call.",
-      placement: "left",
+      placement: isMobile ? "top" : "left",
+      placementBeacon: isMobile ? "top" : "left",
     },
   ];
 
@@ -801,20 +808,40 @@ export default function DebtCollectionDashboard() {
           options: {
             primaryColor: "#2563eb",
             zIndex: 10000,
+            width: isMobile ? 280 : 360,
           },
           tooltip: {
             borderRadius: 12,
-            padding: 20,
+            padding: isMobile ? 12 : 20,
+            fontSize: isMobile ? 14 : 16,
+          },
+          tooltipContainer: {
+            textAlign: "left",
           },
           buttonNext: {
             borderRadius: 8,
-            padding: "8px 16px",
+            padding: isMobile ? "6px 12px" : "8px 16px",
             backgroundColor: "#2563eb",
+            fontSize: isMobile ? 13 : 14,
           },
           buttonBack: {
             borderRadius: 8,
-            padding: "8px 16px",
+            padding: isMobile ? "6px 12px" : "8px 16px",
             color: "#64748b",
+            fontSize: isMobile ? 13 : 14,
+          },
+          buttonSkip: {
+            fontSize: isMobile ? 13 : 14,
+          },
+        }}
+        floaterProps={{
+          disableAnimation: isMobile,
+          styles: {
+            floater: {
+              filter: isMobile
+                ? "none"
+                : "drop-shadow(0 0 3px rgba(0, 0, 0, 0.5))",
+            },
           },
         }}
       />
@@ -822,27 +849,27 @@ export default function DebtCollectionDashboard() {
       {/* Welcome Modal */}
       {showWelcome && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 relative animate-in fade-in zoom-in duration-300">
-            <div className="text-center space-y-6">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto shadow-lg">
-                <Sparkles className="w-10 h-10 text-white" />
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-4 sm:p-8 relative animate-in fade-in zoom-in duration-300 max-h-[90vh] overflow-y-auto">
+            <div className="text-center space-y-4 sm:space-y-6">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               </div>
 
-              <div className="space-y-3">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+              <div className="space-y-2 sm:space-y-3">
+                <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
                   Welcome to DebtWise AI
                 </h2>
-                <p className="text-lg text-gray-600 max-w-md mx-auto">
+                <p className="text-base sm:text-lg text-gray-600 max-w-md mx-auto px-2">
                   Your intelligent AI-powered debt collection assistant. Let us
                   show you how it works!
                 </p>
               </div>
 
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 space-y-4">
-                <h3 className="font-semibold text-gray-900 text-lg">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 sm:p-6 space-y-3 sm:space-y-4">
+                <h3 className="font-semibold text-gray-900 text-base sm:text-lg">
                   What you'll learn:
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 text-left">
                   <div className="flex items-start space-x-3">
                     <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                     <div>
@@ -890,19 +917,19 @@ export default function DebtCollectionDashboard() {
                 </div>
               </div>
 
-              <div className="flex gap-4 justify-center pt-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2 sm:pt-4">
                 <Button
                   onClick={skipTour}
                   variant="outline"
-                  size="lg"
-                  className="px-8 h-12 text-base border-gray-300 hover:bg-gray-50 rounded-lg"
+                  size={isMobile ? "default" : "lg"}
+                  className="w-full sm:w-auto px-6 sm:px-8 h-10 sm:h-12 text-sm sm:text-base border-gray-300 hover:bg-gray-50 rounded-lg"
                 >
                   Skip Tour
                 </Button>
                 <Button
                   onClick={startTour}
-                  size="lg"
-                  className="px-8 h-12 text-base bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg rounded-lg"
+                  size={isMobile ? "default" : "lg"}
+                  className="w-full sm:w-auto px-6 sm:px-8 h-10 sm:h-12 text-sm sm:text-base bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg rounded-lg"
                 >
                   <Play className="w-4 h-4 mr-2" />
                   Start Tour
@@ -1007,13 +1034,13 @@ export default function DebtCollectionDashboard() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden">
-        <div className="max-w-[1600px] mx-auto px-4 py-4 h-[calc(100vh-140px)]">
+      <div className="flex-1 overflow-auto lg:overflow-hidden">
+        <div className="max-w-[1600px] mx-auto px-4 py-4 lg:h-[calc(100vh-140px)]">
           {/* Three Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:h-full">
             {/* Column 1: Customer Info */}
             <div className="flex flex-col customer-info-section">
-              <Card className="flex flex-col h-full shadow-lg border border-gray-200 bg-white overflow-hidden">
+              <Card className="flex flex-col lg:h-full shadow-lg border border-gray-200 bg-white overflow-hidden">
                 <CardHeader className="pb-2 flex-shrink-0 border-b border-gray-200 bg-gradient-to-br from-blue-50 via-blue-50 to-indigo-50 px-4 py-3">
                   <CardTitle className="flex items-center justify-between text-sm font-bold text-gray-900">
                     <div className="flex items-center">
@@ -1037,7 +1064,7 @@ export default function DebtCollectionDashboard() {
                     )}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 overflow-y-auto p-4 space-y-3 bg-white">
+                <CardContent className="flex-1 overflow-y-auto p-4 space-y-3 bg-white max-h-[60vh] lg:max-h-none">
                   {/* Help Card */}
                   {currentStep === 1 && !completedSteps.includes(1) && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5 flex items-start space-x-2 animate-in fade-in slide-in-from-top duration-500">
@@ -1152,7 +1179,7 @@ export default function DebtCollectionDashboard() {
 
             {/* Column 2: Loan Details */}
             <div className="flex flex-col loan-details-section">
-              <Card className="flex flex-col h-full shadow-lg border border-gray-200 bg-white overflow-hidden">
+              <Card className="flex flex-col lg:h-full shadow-lg border border-gray-200 bg-white overflow-hidden">
                 <CardHeader className="pb-2 flex-shrink-0 border-b border-gray-200 bg-gradient-to-br from-green-50 via-green-50 to-emerald-50 px-4 py-3">
                   <CardTitle className="flex items-center justify-between text-sm font-bold text-gray-900">
                     <div className="flex items-center">
@@ -1192,7 +1219,7 @@ export default function DebtCollectionDashboard() {
                     </Button>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 overflow-y-auto p-4 space-y-3 bg-white">
+                <CardContent className="flex-1 overflow-y-auto p-4 space-y-3 bg-white max-h-[60vh] lg:max-h-none">
                   {currentStep === 2 && !completedSteps.includes(2) && (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-2.5 flex items-start space-x-2 animate-in fade-in slide-in-from-top duration-500">
                       <HelpCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
@@ -1464,7 +1491,7 @@ export default function DebtCollectionDashboard() {
 
             {/* Column 3: Call Management & Outcomes */}
             <div className="flex flex-col call-management-section">
-              <Card className="flex flex-col h-full shadow-lg border border-gray-200 bg-white overflow-hidden">
+              <Card className="flex flex-col lg:h-full shadow-lg border border-gray-200 bg-white overflow-hidden">
                 <CardHeader className="pb-2 flex-shrink-0 border-b border-gray-200 bg-gradient-to-br from-purple-50 via-purple-50 to-pink-50 px-4 py-3">
                   <CardTitle className="flex items-center justify-between text-sm font-bold text-gray-900">
                     <div className="flex items-center">
@@ -1495,7 +1522,7 @@ export default function DebtCollectionDashboard() {
                     </div>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 bg-white">
+                <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 bg-white max-h-[60vh] lg:max-h-none">
                   {/* Outcomes Section */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
